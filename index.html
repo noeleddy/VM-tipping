@@ -1,0 +1,981 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+#vmt-root {
+  --pitch:      #0B2A22;
+  --pitch-2:    #0F3A2C;
+  --line:       #1F5C42;
+  --line-soft:  #17452F;
+  --gold:       #E8B94B;
+  --gold-dim:   #B8934C;
+  --red:        #C1443B;
+  --green-ok:   #4CA974;
+  --chalk:      #F3F1E7;
+  --muted:      #9FB9AC;
+  --radius:     10px;
+
+  font-family: 'Inter', sans-serif;
+  color: var(--chalk);
+  background:
+    repeating-linear-gradient(180deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 46px),
+    var(--pitch);
+  min-height: 100vh;
+  padding: 0 0 60px 0;
+  box-sizing: border-box;
+}
+#vmt-root *, #vmt-root *::before, #vmt-root *::after { box-sizing: border-box; }
+#vmt-root button { font-family: 'Inter', sans-serif; cursor: pointer; }
+#vmt-root input, #vmt-root select { font-family: 'Inter', sans-serif; }
+#vmt-root button:focus-visible,
+#vmt-root input:focus-visible,
+#vmt-root select:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.vmt-hero {
+  padding: 36px 20px 22px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(232,185,75,0.06), transparent 70%);
+  position: relative;
+  overflow: hidden;
+}
+.vmt-hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 50% 0%, rgba(232,185,75,0.10), transparent 55%);
+  pointer-events: none;
+}
+.vmt-hero-eyebrow { font-family: 'Space Mono', monospace; letter-spacing: 3px; font-size: 11px; color: var(--gold); text-transform: uppercase; }
+.vmt-hero h1 {
+  font-family: 'Oswald', sans-serif; font-weight: 700; font-style: italic; text-transform: uppercase;
+  font-size: clamp(28px, 6vw, 44px); letter-spacing: 1px; margin: 6px 0 4px;
+}
+.vmt-hero p { color: var(--muted); font-size: 14px; margin: 0; }
+.vmt-deadline-banner {
+  margin-top: 16px; display: inline-block; background: rgba(232,185,75,0.12);
+  border: 1px solid var(--gold-dim); border-radius: 8px; padding: 10px 18px;
+  font-size: 14px; color: var(--chalk);
+}
+.vmt-deadline-banner b { color: var(--gold); font-weight: 700; }
+.vmt-user-pill {
+  margin-top: 16px; display: inline-flex; align-items: center; gap: 10px;
+  background: var(--pitch-2); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 16px; font-size: 14px;
+}
+.vmt-user-pill b { color: var(--gold); font-weight: 600; }
+.vmt-switch-btn { background: var(--line-soft); border: 1px solid var(--line); color: var(--chalk); border-radius: 999px; padding: 6px 12px; font-size: 12px; }
+.vmt-switch-btn:hover { background: var(--line); }
+
+.vmt-tabs {
+  display: flex; gap: 4px; padding: 14px 16px 0; max-width: 920px; margin: 0 auto;
+  overflow-x: auto; border-bottom: 1px solid var(--line);
+}
+.vmt-tab {
+  background: transparent; border: none; color: var(--muted); font-family: 'Oswald', sans-serif;
+  text-transform: uppercase; letter-spacing: 0.5px; font-size: 13px; padding: 10px 14px;
+  border-bottom: 3px solid transparent; white-space: nowrap;
+}
+.vmt-tab.active { color: var(--chalk); border-bottom-color: var(--gold); }
+.vmt-tab:hover { color: var(--chalk); }
+
+.vmt-body { max-width: 920px; margin: 0 auto; padding: 22px 16px 0; }
+.vmt-body.wide { max-width: 100%; }
+
+.vmt-section-title { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 19px; letter-spacing: 0.5px; margin: 4px 0 4px; }
+.vmt-section-sub { color: var(--muted); font-size: 13px; margin: 0 0 18px; line-height: 1.5; }
+
+.vmt-stage-label {
+  font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold-dim); margin: 22px 0 8px; display: flex; align-items: center; gap: 10px;
+}
+.vmt-stage-label::after { content:""; flex:1; height:1px; background: var(--line); }
+
+/* ---- match card (list view) ---- */
+.vmt-card { background: var(--pitch-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
+.vmt-match-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); margin-bottom: 10px; font-family: 'Space Mono', monospace; }
+.vmt-badge { border-radius: 999px; padding: 2px 9px; font-size: 10px; letter-spacing: 0.5px; }
+.vmt-badge.locked { background: rgba(193,68,59,0.18); color: #E38178; border: 1px solid rgba(193,68,59,0.4); }
+.vmt-badge.open { background: rgba(232,185,75,0.15); color: var(--gold); border: 1px solid rgba(232,185,75,0.35); }
+.vmt-badge.done { background: rgba(159,185,172,0.15); color: var(--muted); border: 1px solid var(--line); }
+
+.vmt-choice-row { display: flex; align-items: stretch; gap: 10px; }
+.vmt-team-choice {
+  flex: 1; background: var(--pitch); border: 1px solid var(--line); border-radius: 8px;
+  color: var(--chalk); font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 14px;
+  padding: 12px 10px; text-align: center; transition: border-color .12s, background .12s;
+}
+.vmt-team-choice:hover:not(:disabled) { border-color: var(--gold-dim); }
+.vmt-team-choice.picked { border-color: var(--gold); background: rgba(232,185,75,0.12); color: var(--gold); }
+.vmt-team-choice.correct { border-color: var(--green-ok); background: rgba(76,169,116,0.15); color: var(--green-ok); }
+.vmt-team-choice.wrong { opacity: 0.45; }
+.vmt-team-choice:disabled { cursor: default; }
+.vmt-vs { align-self: center; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 12px; padding: 0 2px; }
+
+.vmt-card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; }
+.vmt-result-line { color: var(--muted); font-family: 'Space Mono', monospace; }
+.vmt-points-line { color: var(--gold); font-family: 'Space Mono', monospace; }
+
+.vmt-btn { background: var(--gold); color: var(--pitch); border: none; border-radius: 6px; padding: 8px 14px; font-weight: 600; font-size: 12px; }
+.vmt-btn:hover { background: #f2c862; }
+.vmt-btn.secondary { background: transparent; border: 1px solid var(--line); color: var(--chalk); }
+.vmt-btn.secondary:hover { border-color: var(--gold); }
+.vmt-btn.small { padding: 5px 10px; font-size: 11px; }
+
+.vmt-empty { border: 1px dashed var(--line); border-radius: var(--radius); padding: 26px 18px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* ---- picks tab ---- */
+.vmt-picks-grid { display: grid; gap: 14px; }
+.vmt-pick-card { background: var(--pitch-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.vmt-pick-card label { display: block; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; }
+.vmt-pick-card input { width: 100%; background: var(--pitch); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; color: var(--chalk); font-size: 15px; }
+.vmt-pick-hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.vmt-champion-box {
+  background: linear-gradient(180deg, rgba(232,185,75,0.10), transparent);
+  border: 1px solid var(--gold-dim); border-radius: var(--radius); padding: 20px; text-align: center; margin-bottom: 16px;
+}
+.vmt-champion-box .vmt-cb-label { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dim); }
+.vmt-champion-box .vmt-cb-name { font-family: 'Oswald', sans-serif; font-size: 26px; text-transform: uppercase; color: var(--gold); margin-top: 6px; }
+
+/* ---- leaderboard ---- */
+table.vmt-lb { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.vmt-lb th, table.vmt-lb td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+table.vmt-lb th:first-child, table.vmt-lb td:first-child, table.vmt-lb th:nth-child(2), table.vmt-lb td:nth-child(2) { text-align: left; }
+table.vmt-lb th { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+table.vmt-lb td.vmt-total { color: var(--gold); font-family: 'Space Mono', monospace; font-weight: 700; }
+tr.vmt-me { background: rgba(232,185,75,0.06); }
+tr.vmt-rank1 td.vmt-rank { color: var(--gold); }
+
+/* ---- select screen ---- */
+.vmt-select-screen { max-width: 420px; margin: 40px auto; padding: 0 20px; text-align: center; }
+.vmt-friend-btn { display: block; width: 100%; background: var(--pitch-2); border: 1px solid var(--line); color: var(--chalk); border-radius: 8px; padding: 12px; font-size: 15px; margin-bottom: 8px; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.4px; }
+.vmt-friend-btn:hover { border-color: var(--gold); color: var(--gold); }
+.vmt-newname-row { display: flex; gap: 8px; margin-top: 18px; }
+.vmt-newname-row input { flex: 1; background: var(--pitch-2); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; color: var(--chalk); font-size: 14px; }
+.vmt-lock-banner {
+  margin-top: 20px; background: rgba(193,68,59,0.12); border: 1px solid rgba(193,68,59,0.4);
+  color: #E38178; border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 1.5;
+}
+.vmt-modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(3,10,7,0.72); z-index: 200;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.vmt-modal {
+  background: var(--pitch-2); border: 1px solid var(--line); border-radius: 12px; padding: 22px;
+  max-width: 340px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.vmt-modal-title { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 17px; letter-spacing: 0.4px; margin-bottom: 8px; }
+.vmt-modal-msg { color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+.vmt-modal input {
+  width: 100%; background: var(--pitch); border: 1px solid var(--line); border-radius: 6px;
+  padding: 12px; color: var(--chalk); font-size: 18px; text-align: center; letter-spacing: 4px;
+  font-family: 'Space Mono', monospace; margin-bottom: 16px;
+}
+.vmt-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.vmt-modal-actions button { flex: 1; }
+
+/* ---- admin ---- */
+.vmt-admin-box { background: var(--pitch-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.vmt-admin-box h4 { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; color: var(--gold-dim); margin: 0 0 12px; }
+.vmt-form-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.vmt-form-row input, .vmt-form-row select { background: var(--pitch); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; color: var(--chalk); font-size: 13px; flex: 1; min-width: 110px; }
+.vmt-admin-match-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.vmt-admin-match-row:last-child { border-bottom: none; }
+.vmt-am-name { flex: 1; min-width: 200px; }
+.vmt-am-teams { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+.vmt-admin-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 40;
+  background: var(--pitch-2); border: 1px solid var(--line); color: var(--muted);
+  border-radius: 999px; padding: 8px 16px; font-size: 12px; font-family: 'Space Mono', monospace;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.vmt-admin-btn:hover { color: var(--gold); border-color: var(--gold); }
+
+.vmt-loading { text-align: center; padding: 60px 20px; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 13px; }
+
+/* ---- bracket tree ---- */
+.vmt-bracket-scroll { overflow-x: auto; padding: 20px 20px 40px; }
+.vmt-bracket-inner { display: inline-flex; align-items: center; min-width: max-content; }
+.vmt-bnode { display: flex; align-items: center; }
+.vmt-bnode-children { display: flex; flex-direction: column; justify-content: space-around; position: relative; margin-right: 26px; gap: 14px; }
+.vmt-bnode-children::before { content:''; position:absolute; top:25%; bottom:25%; right:-13px; width:2px; background:var(--line); }
+.vmt-bnode-children::after { content:''; position:absolute; top:50%; right:-26px; width:13px; height:2px; background:var(--line); }
+.vmt-bnode-children > .vmt-bnode { position: relative; }
+.vmt-bnode-children > .vmt-bnode::after { content:''; position:absolute; top:50%; right:-13px; width:13px; height:2px; background:var(--line); }
+
+.vmt-bbox { width: 168px; background: var(--pitch-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
+.vmt-bbox-stage { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--gold-dim); text-align: center; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+.vmt-bbox-team {
+  display: block; width: 100%; background: var(--pitch); border: 1px solid var(--line); border-radius: 5px;
+  color: var(--chalk); font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 12px;
+  padding: 7px 6px; text-align: left; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vmt-bbox-team:last-child { margin-bottom: 0; }
+.vmt-bbox-team:hover:not(:disabled) { border-color: var(--gold-dim); }
+.vmt-bbox-team.picked { border-color: var(--gold); background: rgba(232,185,75,0.12); color: var(--gold); }
+.vmt-bbox-team.correct { border-color: var(--green-ok); background: rgba(76,169,116,0.15); color: var(--green-ok); }
+.vmt-bbox-team.wrong { opacity: 0.4; }
+.vmt-bbox-team:disabled { cursor: default; }
+
+.vmt-bracket-legend { display: flex; gap: 22px; flex-wrap: wrap; padding: 0 16px; margin-bottom: 6px; font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+.vmt-bracket-side { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+.vmt-bracket-final-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; margin-left: 10px; }
+.vmt-bronze-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; text-align: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .vmt-card, .vmt-bbox { transition: border-color 0.15s ease; }
+}
+</style>
+
+<div id="vmt-root">
+  <div id="vmt-app"><div class="vmt-loading">Henter tippekonkurransen …</div></div>
+</div>
+
+<script>
+(function(){
+
+  const STAGE_ORDER = ["16-delsfinale","Attendedelsfinale","Kvartfinale","Semifinale","Bronsefinale","Finale"];
+  const STAGE_LABELS = {
+    "16-delsfinale":"16-delsfinale",
+    "Attendedelsfinale":"Åttedelsfinale",
+    "Kvartfinale":"Kvartfinale",
+    "Semifinale":"Semifinale",
+    "Bronsefinale":"Bronsefinale",
+    "Finale":"Finale"
+  };
+  const POINTS = { "16-delsfinale":3, "Attendedelsfinale":3, "Kvartfinale":3, "Semifinale":3, "Bronsefinale":3, "Finale":10 };
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_CODE = "1337";
+  const TREE_LEAF_STAGE = "Attendedelsfinale"; // visual bracket tree stops recursing here
+
+  // Bracket definition: team1/team2 are either real names, or placeholder text used until resolved.
+  // from1/from2 (optional) point to a feeder match id; from*Type is 'winner' (default) or 'loser'.
+  const SEED_MATCHES = [
+    { id:"r32_au_eg", stage:"16-delsfinale", team1:"Australia", team2:"Egypt", kickoff:"2026-07-03T20:00" },
+    { id:"r32_ar_cv", stage:"16-delsfinale", team1:"Argentina", team2:"Kapp Verde", kickoff:"2026-07-04T00:00" },
+    { id:"r32_co_gh", stage:"16-delsfinale", team1:"Colombia", team2:"Ghana", kickoff:"2026-07-04T03:30" },
+
+    { id:"r16_1", stage:"Attendedelsfinale", team1:"Paraguay", team2:"Frankrike", kickoff:"2026-07-04T23:00" },
+    { id:"r16_2", stage:"Attendedelsfinale", team1:"Canada", team2:"Marokko", kickoff:"2026-07-04T19:00" },
+    { id:"r16_3", stage:"Attendedelsfinale", team1:"Portugal", team2:"Spania", kickoff:"2026-07-06T21:00" },
+    { id:"r16_4", stage:"Attendedelsfinale", team1:"USA", team2:"Belgia", kickoff:"2026-07-07T02:00" },
+    { id:"r16_5", stage:"Attendedelsfinale", team1:"Brasil", team2:"Norge", kickoff:"2026-07-05T22:00" },
+    { id:"r16_6", stage:"Attendedelsfinale", team1:"Mexico", team2:"England", kickoff:"2026-07-06T02:00" },
+    { id:"r16_7", stage:"Attendedelsfinale", team1:"Vinner ARG/CPV", team2:"Vinner AUS/EGY", kickoff:"2026-07-07T18:00", from1:"r32_ar_cv", from2:"r32_au_eg" },
+    { id:"r16_8", stage:"Attendedelsfinale", team1:"Sveits", team2:"Vinner COL/GHA", kickoff:"2026-07-07T22:00", from2:"r32_co_gh" },
+
+    { id:"qf_1", stage:"Kvartfinale", team1:"Vinner PAR/FRA", team2:"Vinner CAN/MAR", kickoff:"2026-07-09T22:00", from1:"r16_1", from2:"r16_2" },
+    { id:"qf_2", stage:"Kvartfinale", team1:"Vinner POR/ESP", team2:"Vinner USA/BEL", kickoff:"2026-07-10T21:00", from1:"r16_3", from2:"r16_4" },
+    { id:"qf_3", stage:"Kvartfinale", team1:"Vinner BRA/NOR", team2:"Vinner MEX/ENG", kickoff:"2026-07-11T23:00", from1:"r16_5", from2:"r16_6" },
+    { id:"qf_4", stage:"Kvartfinale", team1:"Vinner kamp 7", team2:"Vinner kamp 8", kickoff:"2026-07-12T03:00", from1:"r16_7", from2:"r16_8" },
+
+    { id:"sf_1", stage:"Semifinale", team1:"Vinner kvartfinale 1", team2:"Vinner kvartfinale 2", kickoff:"2026-07-14T21:00", from1:"qf_1", from2:"qf_2" },
+    { id:"sf_2", stage:"Semifinale", team1:"Vinner kvartfinale 3", team2:"Vinner kvartfinale 4", kickoff:"2026-07-15T21:00", from1:"qf_3", from2:"qf_4" },
+
+    { id:"bronze", stage:"Bronsefinale", team1:"Taper semifinale 1", team2:"Taper semifinale 2", kickoff:"2026-07-18T23:00", from1:"sf_1", from1Type:"loser", from2:"sf_2", from2Type:"loser" },
+    { id:"final", stage:"Finale", team1:"Vinner semifinale 1", team2:"Vinner semifinale 2", kickoff:"2026-07-19T21:00", from1:"sf_1", from2:"sf_2" },
+  ];
+
+  let state = {
+    booting: true,
+    screen: 'select',
+    currentUser: null,
+    tab: 'bracket',
+    friends: [],
+    matches: [],
+    matchesById: {},
+    special: { topscorer: null, topassist: null, finalGoals: null },
+    settings: { deadline: "2026-07-03T19:45:00+02:00" },
+    myPred: { matches: {}, topscorer: '', topassist: '', finalGoals: '' },
+    allPreds: {},
+    adminMode: false,
+    adminPanelOpen: false,
+    pins: {},
+    scoreOverrides: {},
+  };
+
+  const root = document.getElementById('vmt-app');
+
+  function slugify(name){
+    return name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'venn';
+  }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function fmtDate(iso){
+    if(!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleString('nb-NO', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+  function isGloballyLocked(){
+    if(!state.settings.deadline) return false;
+    return new Date() >= new Date(state.settings.deadline);
+  }
+  function toLocalInputValue(iso){
+    if(!iso) return '';
+    const d = new Date(iso);
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0,16);
+  }
+
+  function isLocked(){
+    return isGloballyLocked();
+  }
+
+  async function getShared(key, fallback){
+    try { const r = await window.storage.get(key, true); return r ? JSON.parse(r.value) : fallback; }
+    catch(e) { return fallback; }
+  }
+  function showToast(msg){
+    let t = document.getElementById('vmt-toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'vmt-toast';
+      t.style.cssText = 'position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:#C1443B;color:#F3F1E7;padding:10px 16px;border-radius:8px;font-family:Inter,sans-serif;font-size:13px;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.35);max-width:90vw;text-align:center;';
+      document.getElementById('vmt-root').appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(t._hideTimer);
+    t._hideTimer = setTimeout(() => { t.style.display = 'none'; }, 4000);
+  }
+  function vmtModal(opts){
+    const { title='', message='', withInput=false, inputType='text', placeholder='', confirmText='OK', cancelText='Avbryt', hideCancel=false } = opts;
+    return new Promise((resolve) => {
+      let overlay = document.getElementById('vmt-modal-overlay');
+      if(!overlay){
+        overlay = document.createElement('div');
+        overlay.id = 'vmt-modal-overlay';
+        overlay.className = 'vmt-modal-overlay';
+        document.getElementById('vmt-root').appendChild(overlay);
+      }
+      overlay.innerHTML = `
+        <div class="vmt-modal">
+          ${title ? `<div class="vmt-modal-title">${esc(title)}</div>` : ''}
+          ${message ? `<div class="vmt-modal-msg">${esc(message)}</div>` : ''}
+          ${withInput ? `<input id="vmt-modal-input" type="${inputType==='number'?'tel':inputType}" inputmode="${inputType==='number'?'numeric':'text'}" pattern="${inputType==='number'?'[0-9]*':''}" placeholder="${esc(placeholder)}" maxlength="${inputType==='number'?4:60}" autocomplete="off" />` : ''}
+          <div class="vmt-modal-actions">
+            ${hideCancel ? '' : `<button class="vmt-btn secondary" id="vmt-modal-cancel">${esc(cancelText)}</button>`}
+            <button class="vmt-btn" id="vmt-modal-ok">${esc(confirmText)}</button>
+          </div>
+        </div>
+      `;
+      overlay.style.display = 'flex';
+      const inputEl = document.getElementById('vmt-modal-input');
+      if(inputEl) setTimeout(() => inputEl.focus(), 60);
+      function close(result){ overlay.style.display = 'none'; resolve(result); }
+      const cancelBtn = document.getElementById('vmt-modal-cancel');
+      if(cancelBtn) cancelBtn.onclick = () => close(null);
+      document.getElementById('vmt-modal-ok').onclick = () => close(inputEl ? inputEl.value.trim() : true);
+      if(inputEl) inputEl.onkeydown = (e) => { if(e.key === 'Enter') close(inputEl.value.trim()); };
+    });
+  }
+  function vmtAdminLoginModal(){
+    return new Promise((resolve) => {
+      let overlay = document.getElementById('vmt-modal-overlay');
+      if(!overlay){
+        overlay = document.createElement('div');
+        overlay.id = 'vmt-modal-overlay';
+        overlay.className = 'vmt-modal-overlay';
+        document.getElementById('vmt-root').appendChild(overlay);
+      }
+      overlay.innerHTML = `
+        <div class="vmt-modal">
+          <div class="vmt-modal-title">Admin-innlogging</div>
+          <div class="vmt-modal-msg">Skriv inn brukernavn og kode.</div>
+          <input id="vmt-modal-user" type="text" placeholder="Brukernavn" autocomplete="off" style="letter-spacing:normal;font-size:14px;text-align:left;margin-bottom:10px;" />
+          <input id="vmt-modal-code" type="password" placeholder="Kode" autocomplete="off" style="letter-spacing:normal;font-size:14px;text-align:left;" />
+          <div class="vmt-modal-actions" style="margin-top:16px;">
+            <button class="vmt-btn secondary" id="vmt-modal-cancel">Avbryt</button>
+            <button class="vmt-btn" id="vmt-modal-ok">Lås opp</button>
+          </div>
+        </div>
+      `;
+      overlay.style.display = 'flex';
+      const userEl = document.getElementById('vmt-modal-user');
+      const codeEl = document.getElementById('vmt-modal-code');
+      setTimeout(() => userEl.focus(), 60);
+      function close(result){ overlay.style.display = 'none'; resolve(result); }
+      document.getElementById('vmt-modal-cancel').onclick = () => close(null);
+      document.getElementById('vmt-modal-ok').onclick = () => close({ username: userEl.value.trim(), code: codeEl.value.trim() });
+      codeEl.onkeydown = (e) => { if(e.key === 'Enter') close({ username: userEl.value.trim(), code: codeEl.value.trim() }); };
+    });
+  }
+  async function setShared(key, value, attempt){
+    attempt = attempt || 0;
+    try {
+      await window.storage.set(key, JSON.stringify(value), true);
+      return true;
+    } catch(e) {
+      if(attempt < 2){
+        await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+        return setShared(key, value, attempt + 1);
+      }
+      console.error('Lagring feilet', e);
+      showToast('Klarte ikke å lagre – sjekk internett og prøv igjen.');
+      return false;
+    }
+  }
+  async function deleteShared(key){
+    try { await window.storage.delete(key, true); }
+    catch(e) { /* key may already be gone — safe to ignore */ }
+  }
+
+  async function loadCore(){
+    state.friends = await getShared('friends', []);
+    state.matches = await getShared('bracket_matches', []);
+    state.special = await getShared('special', { topscorer:null, topassist:null, finalGoals:null });
+    state.settings = await getShared('settings', { deadline:"2026-07-03T19:45:00+02:00" });
+    state.pins = await getShared('pins', {});
+    state.scoreOverrides = await getShared('score_overrides', {});
+
+    if(!state.matches.length){
+      state.matches = SEED_MATCHES.map(m => ({ ...m, kickoff: new Date(m.kickoff).toISOString(), result: null }));
+      await setShared('bracket_matches', state.matches);
+    }
+    state.matchesById = {};
+    state.matches.forEach(m => { state.matchesById[m.id] = m; });
+  }
+
+  async function loadPred(name){
+    const slug = slugify(name);
+    return await getShared('pred:' + slug, { matches:{}, topscorer:'', topassist:'', finalGoals:'' });
+  }
+  async function savePred(name, pred){ await setShared('pred:' + slugify(name), pred); }
+
+  async function loadAllPreds(){
+    const out = {};
+    for(const f of state.friends){ out[f] = await loadPred(f); }
+    state.allPreds = out;
+  }
+
+  // ---------- bracket resolution ----------
+  function resolveSide(matchId, side, pred){
+    const m = state.matchesById[matchId];
+    if(!m) return { name:'?', resolved:false };
+    const fromKey = 'from'+side, typeKey = 'from'+side+'Type', teamKey = 'team'+side;
+    const feederId = m[fromKey];
+    if(!feederId) return { name: m[teamKey], resolved:true };
+    const feeder = state.matchesById[feederId];
+    const type = m[typeKey] || 'winner';
+    if(feeder && feeder.result){
+      const winSide = feeder.result.winner;
+      const wantSide = (type === 'winner') ? winSide : (winSide === 1 ? 2 : 1);
+      return resolveSide(feederId, wantSide, pred);
+    }
+    const p = pred && pred.matches && pred.matches[feederId];
+    if(p && p.winner){
+      const wantSide = (type === 'winner') ? p.winner : (p.winner === 1 ? 2 : 1);
+      return resolveSide(feederId, wantSide, pred);
+    }
+    return { name: m[teamKey], resolved:false };
+  }
+
+  function computeRawTotals(pred){
+    let matchPts = 0;
+    state.matches.forEach(m => {
+      if(!m.result) return;
+      const p = pred.matches && pred.matches[m.id];
+      if(p && p.winner === m.result.winner) matchPts += POINTS[m.stage] || 0;
+    });
+    let scorerPts = (state.special.topscorer && pred.topscorer && pred.topscorer.trim().toLowerCase() === state.special.topscorer.trim().toLowerCase()) ? 10 : 0;
+    let assistPts = (state.special.topassist && pred.topassist && pred.topassist.trim().toLowerCase() === state.special.topassist.trim().toLowerCase()) ? 10 : 0;
+    let goalsPts = (state.special.finalGoals != null && pred.finalGoals !== '' && pred.finalGoals != null && Number(pred.finalGoals) === Number(state.special.finalGoals)) ? 5 : 0;
+    return { matchPts, scorerPts, assistPts, goalsPts, total: matchPts + scorerPts + assistPts + goalsPts };
+  }
+  function computeTotals(name, pred){
+    const raw = computeRawTotals(pred);
+    let { matchPts, scorerPts, assistPts, goalsPts } = raw;
+    const ov = state.scoreOverrides[slugify(name)];
+    if(ov){
+      if(ov.matchPts != null) matchPts = ov.matchPts;
+      if(ov.scorerPts != null) scorerPts = ov.scorerPts;
+      if(ov.assistPts != null) assistPts = ov.assistPts;
+      if(ov.goalsPts != null) goalsPts = ov.goalsPts;
+    }
+    return { matchPts, scorerPts, assistPts, goalsPts, total: matchPts + scorerPts + assistPts + goalsPts, overridden: !!ov, raw };
+  }
+
+  // ---------- actions ----------
+  window.vmtSelectFriend = async function(name){
+    const slug = slugify(name);
+    const existing = state.pins[slug];
+    if(existing){
+      const p = await vmtModal({ title: 'Kode for ' + name, message: 'Skriv inn den 4-sifrede koden.', withInput:true, inputType:'number', placeholder:'••••', confirmText:'Gå inn' });
+      if(p === null) return;
+      if(p !== existing){ showToast('Feil kode.'); return; }
+    } else {
+      const p1 = await vmtModal({ title: 'Sett kode for ' + name, message: 'Denne brukeren mangler kode ennå. Velg en 4-sifret kode (kun tall).', withInput:true, inputType:'number', placeholder:'••••', confirmText:'Lagre kode' });
+      if(p1 === null) return;
+      if(!/^\d{4}$/.test(p1)){ showToast('Koden må være nøyaktig 4 tall.'); return; }
+      state.pins[slug] = p1;
+      await setShared('pins', state.pins);
+    }
+    state.currentUser = name;
+    state.myPred = await loadPred(name);
+    state.screen = 'main';
+    render();
+  };
+
+  window.vmtAddFriend = async function(){
+    if(isGloballyLocked()){ showToast('Tippingen er stengt – ingen nye spillere kan bli med nå.'); return; }
+    const name = (document.getElementById('vmt-newname').value || '').trim();
+    const pin = (document.getElementById('vmt-newpin').value || '').trim();
+    if(!name){ showToast('Skriv inn et navn.'); return; }
+    if(!/^\d{4}$/.test(pin)){ showToast('Koden må være nøyaktig 4 tall.'); return; }
+    if(state.friends.some(f => f.toLowerCase() === name.toLowerCase())){
+      showToast('Det navnet finnes allerede – klikk på det i listen over i stedet.');
+      return;
+    }
+    const slug = slugify(name);
+    state.friends.push(name);
+    await setShared('friends', state.friends);
+    state.pins[slug] = pin;
+    await setShared('pins', state.pins);
+    await window.vmtSelectFriend(name);
+  };
+  window.vmtSwitchUser = function(){
+    state.screen = 'select'; state.currentUser = null; state.adminMode = false; render();
+  };
+  window.vmtSetTab = function(tab){
+    state.tab = tab;
+    if(tab === 'results'){ loadAllPreds().then(render); return; }
+    render();
+  };
+
+  window.vmtPick = async function(matchId, side){
+    const m = state.matchesById[matchId];
+    if(!m || isLocked()) return;
+    state.myPred.matches = state.myPred.matches || {};
+    state.myPred.matches[matchId] = { winner: side };
+    await savePred(state.currentUser, state.myPred);
+    render();
+  };
+
+  window.vmtSavePicks = async function(){
+    if(isLocked()) return;
+    state.myPred.topscorer = (document.getElementById('vmt-pick-scorer').value || '').trim();
+    state.myPred.topassist = (document.getElementById('vmt-pick-assist').value || '').trim();
+    const fg = document.getElementById('vmt-pick-finalgoals').value;
+    state.myPred.finalGoals = fg === '' ? '' : Number(fg);
+    await savePred(state.currentUser, state.myPred);
+    render();
+  };
+
+  window.vmtTryAdmin = async function(){
+    if(state.adminMode){ state.adminPanelOpen = !state.adminPanelOpen; render(); return; }
+    const res = await vmtAdminLoginModal();
+    if(!res) return;
+    if(res.username.toLowerCase() === ADMIN_USERNAME && res.code === ADMIN_CODE){
+      state.adminMode = true; state.adminPanelOpen = true;
+      await loadAllPreds();
+      render();
+    }
+    else { showToast('Feil brukernavn eller kode.'); }
+  };
+
+  window.vmtAddMatch = async function(){
+    const stage = document.getElementById('vmt-a-stage').value;
+    const team1 = document.getElementById('vmt-a-team1').value.trim();
+    const team2 = document.getElementById('vmt-a-team2').value.trim();
+    const kickoff = document.getElementById('vmt-a-kickoff').value;
+    if(!team1 || !team2){ showToast('Fyll inn begge lag.'); return; }
+    const m = { id: 'm' + Date.now() + Math.floor(Math.random()*1000), stage, team1, team2,
+      kickoff: kickoff ? new Date(kickoff).toISOString() : null, result: null };
+    state.matches.push(m);
+    state.matchesById[m.id] = m;
+    await setShared('bracket_matches', state.matches);
+    document.getElementById('vmt-a-team1').value = '';
+    document.getElementById('vmt-a-team2').value = '';
+    render();
+  };
+  window.vmtDeleteMatch = async function(id){
+    const ok = await vmtModal({ title:'Slette kamp?', message:'Kamper andre kamper er koblet til bør ikke slettes.', confirmText:'Slett', cancelText:'Avbryt' });
+    if(!ok) return;
+    state.matches = state.matches.filter(m => m.id !== id);
+    delete state.matchesById[id];
+    await setShared('bracket_matches', state.matches);
+    render();
+  };
+  window.vmtSetActualResult = async function(id, side){
+    const m = state.matchesById[id];
+    if(!m) return;
+    m.result = { winner: side };
+    await setShared('bracket_matches', state.matches);
+    render();
+  };
+  window.vmtClearResult = async function(id){
+    const m = state.matchesById[id];
+    if(!m) return;
+    m.result = null;
+    await setShared('bracket_matches', state.matches);
+    render();
+  };
+  window.vmtSaveTeams = async function(id){
+    const t1 = document.getElementById('vmt-t1-'+id).value.trim();
+    const t2 = document.getElementById('vmt-t2-'+id).value.trim();
+    const m = state.matchesById[id];
+    if(!m || !t1 || !t2) return;
+    m.team1 = t1; m.team2 = t2;
+    await setShared('bracket_matches', state.matches);
+    render();
+  };
+  window.vmtSaveSpecial = async function(){
+    const fg = document.getElementById('vmt-sp-finalgoals').value;
+    state.special = {
+      topscorer: document.getElementById('vmt-sp-scorer').value.trim() || null,
+      topassist: document.getElementById('vmt-sp-assist').value.trim() || null,
+      finalGoals: fg === '' ? null : Number(fg),
+    };
+    await setShared('special', state.special);
+    render();
+  };
+  window.vmtSaveDeadline = async function(){
+    const v = document.getElementById('vmt-sp-deadline').value;
+    state.settings.deadline = v ? new Date(v).toISOString() : null;
+    await setShared('settings', state.settings);
+    render();
+  };
+
+  window.vmtDeleteFriend = async function(name){
+    const ok = await vmtModal({ title:'Fjerne ' + name + '?', message:'Dette sletter brukeren, koden og alle tipsene deres permanent. Kan ikke angres.', confirmText:'Slett for godt', cancelText:'Avbryt' });
+    if(!ok) return;
+    const slug = slugify(name);
+    state.friends = state.friends.filter(f => f !== name);
+    delete state.pins[slug];
+    delete state.scoreOverrides[slug];
+    delete state.allPreds[name];
+    await setShared('friends', state.friends);
+    await setShared('pins', state.pins);
+    await setShared('score_overrides', state.scoreOverrides);
+    await deleteShared('pred:' + slug);
+    render();
+  };
+
+  window.vmtSaveOverride = async function(name){
+    const slug = slugify(name);
+    const m = document.getElementById('vmt-ov-match-' + slug).value;
+    const s = document.getElementById('vmt-ov-scorer-' + slug).value;
+    const a = document.getElementById('vmt-ov-assist-' + slug).value;
+    const g = document.getElementById('vmt-ov-goals-' + slug).value;
+    state.scoreOverrides[slug] = {
+      matchPts: m === '' ? null : Number(m),
+      scorerPts: s === '' ? null : Number(s),
+      assistPts: a === '' ? null : Number(a),
+      goalsPts: g === '' ? null : Number(g),
+    };
+    await setShared('score_overrides', state.scoreOverrides);
+    render();
+  };
+  window.vmtResetOverride = async function(name){
+    const slug = slugify(name);
+    delete state.scoreOverrides[slug];
+    await setShared('score_overrides', state.scoreOverrides);
+    render();
+  };
+
+  // ---------- render ----------
+  function render(){
+    if(state.screen === 'select') renderSelect();
+    else if(state.screen === 'publicResults') renderPublicResults();
+    else renderMain();
+  }
+
+  window.vmtShowPublicResults = async function(){
+    await loadAllPreds();
+    state.screen = 'publicResults';
+    render();
+  };
+  window.vmtBackToSelect = function(){
+    state.screen = 'select';
+    render();
+  };
+
+  function adminButtonHtml(){
+    return `<button class="vmt-admin-btn" onclick="vmtTryAdmin()">${state.adminMode ? '⚙ Admin' : 'Admin'}</button>`;
+  }
+
+  function renderSelect(){
+    const locked = isGloballyLocked();
+    root.innerHTML = `
+      ${adminButtonHtml()}
+      <div class="vmt-hero">
+        <div class="vmt-hero-eyebrow">Blant venner · 11. juni – 19. juli</div>
+        <h1>VM-tipping 2026</h1>
+        <p>Velg hvem som går videre – vi simulerer resten av turneringen for deg.</p>
+        ${state.settings.deadline ? `<div class="vmt-deadline-banner">Frist for å tippe: <b>${esc(fmtDate(state.settings.deadline))}</b></div>` : ''}
+      </div>
+      <div class="vmt-select-screen">
+        <div class="vmt-section-title" style="margin-top:28px;">Hvem er du?</div>
+        <div class="vmt-section-sub">${locked ? 'Tippingen er stengt for kvelden – tast koden din for å se hva du har tippet.' : 'Klikk på navnet ditt og tast koden din for å tippe. Er du ny, lager du navn og kode nederst.'}</div>
+        ${state.friends.length ? state.friends.map(f => `<button class="vmt-friend-btn" onclick="vmtSelectFriend('${esc(f).replace(/'/g,"\\'")}')">${esc(f)}</button>`).join('') : '<div class="vmt-empty">Ingen har blitt med ennå.</div>'}
+        ${state.friends.length ? `<button class="vmt-btn secondary" style="width:100%;margin-top:6px;" onclick="vmtShowPublicResults()">📊 Se resultater</button>` : ''}
+        ${locked ? `<div class="vmt-lock-banner">🔒 Tippingen er stengt. Ingen nye spillere kan bli med, ingen kan velge lag eller endre toppscorer/toppassist. Koden trengs fortsatt for å gå inn på en bruker – bruk «Se resultater» over for å se alt uten kode.</div>` : `
+        <div class="vmt-newname-row">
+          <input id="vmt-newname" type="text" placeholder="Navnet ditt" maxlength="40" />
+          <input id="vmt-newpin" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="4-sifret kode" maxlength="4" style="max-width:120px;" />
+          <button class="vmt-btn" onclick="vmtAddFriend()">Bli med</button>
+        </div>`}
+      </div>
+    `;
+    if(state.adminMode && state.adminPanelOpen) document.querySelector('.vmt-select-screen').insertAdjacentHTML('beforeend', adminHtml());
+  }
+
+  function renderPublicResults(){
+    root.innerHTML = `
+      ${adminButtonHtml()}
+      <div class="vmt-hero">
+        <div class="vmt-hero-eyebrow">Blant venner · 11. juni – 19. juli</div>
+        <h1>VM-tipping 2026</h1>
+        <p>Velg hvem som går videre – vi simulerer resten av turneringen for deg.</p>
+      </div>
+      <div class="vmt-body" id="vmt-body">
+        <button class="vmt-btn secondary" style="margin-bottom:14px;" onclick="vmtBackToSelect()">← Tilbake</button>
+      </div>
+    `;
+    document.getElementById('vmt-body').insertAdjacentHTML('beforeend', resultsHtml());
+    if(state.adminMode && state.adminPanelOpen) document.getElementById('vmt-body').insertAdjacentHTML('beforeend', adminHtml());
+  }
+
+  function renderMain(){
+    const tabs = [ ['bracket','VM-kart'], ['picks','Toppscorer & assist'], ['results','Resultater'] ];
+    root.innerHTML = `
+      ${adminButtonHtml()}
+      <div class="vmt-hero">
+        <div class="vmt-hero-eyebrow">Blant venner · 11. juni – 19. juli</div>
+        <h1>VM-tipping 2026</h1>
+        <p>Velg hvem som går videre – vi simulerer resten av turneringen for deg.</p>
+        <div class="vmt-user-pill">Innlogget som <b>${esc(state.currentUser)}</b>
+          <button class="vmt-switch-btn" onclick="vmtSwitchUser()">Bytt bruker</button>
+        </div>
+      </div>
+      <div class="vmt-tabs">${tabs.map(([k,l]) => `<button class="vmt-tab ${state.tab===k?'active':''}" onclick="vmtSetTab('${k}')">${l}</button>`).join('')}</div>
+      <div class="${state.tab==='bracket' ? 'vmt-body wide' : 'vmt-body'}" id="vmt-body"></div>
+    `;
+    const body = document.getElementById('vmt-body');
+    if(isGloballyLocked()) body.insertAdjacentHTML('beforeend', `<div class="vmt-lock-banner" style="margin:16px 0;">🔒 Tippingen er stengt – dette vises nå kun til visning.</div>`);
+    if(state.tab === 'bracket') body.insertAdjacentHTML('beforeend', bracketTabHtml());
+    else if(state.tab === 'picks') body.insertAdjacentHTML('beforeend', picksHtml());
+    else if(state.tab === 'results') body.insertAdjacentHTML('beforeend', resultsHtml());
+    if(state.adminMode && state.adminPanelOpen) body.insertAdjacentHTML('beforeend', adminHtml());
+  }
+
+  // ---------- bracket tab (visual tree) ----------
+  function matchLabel(m){
+    const sameStage = state.matches.filter(x => x.stage === m.stage);
+    if(sameStage.length <= 1) return STAGE_LABELS[m.stage];
+    const idx = sameStage.findIndex(x => x.id === m.id);
+    return STAGE_LABELS[m.stage] + ' ' + (idx + 1);
+  }
+
+  function bbox(m){
+    const locked = isLocked();
+    const done = !!m.result;
+    const t1 = resolveSide(m.id,1,state.myPred);
+    const t2 = resolveSide(m.id,2,state.myPred);
+    const myPick = state.myPred.matches && state.myPred.matches[m.id] ? state.myPred.matches[m.id].winner : null;
+    const cls1 = ['vmt-bbox-team']; const cls2 = ['vmt-bbox-team'];
+    if(myPick===1) cls1.push('picked'); if(myPick===2) cls2.push('picked');
+    if(done && myPick){
+      cls1.push(m.result.winner===1 ? (myPick===1?'correct':'') : (myPick===1?'wrong':''));
+      cls2.push(m.result.winner===2 ? (myPick===2?'correct':'') : (myPick===2?'wrong':''));
+    }
+    return `<div class="vmt-bbox">
+      <div class="vmt-bbox-stage">${esc(matchLabel(m))}</div>
+      <button class="${cls1.join(' ')}" ${locked?'disabled':''} onclick="vmtPick('${m.id}',1)" title="${esc(t1.name)}">${esc(t1.name)}</button>
+      <button class="${cls2.join(' ')}" ${locked?'disabled':''} onclick="vmtPick('${m.id}',2)" title="${esc(t2.name)}">${esc(t2.name)}</button>
+    </div>`;
+  }
+
+  function buildBracketNode(matchId){
+    const m = state.matchesById[matchId];
+    if(!m) return '';
+    const isLeaf = (m.stage === TREE_LEAF_STAGE) || (!m.from1 && !m.from2);
+    let childrenHtml = '';
+    if(!isLeaf){
+      childrenHtml = `<div class="vmt-bnode-children">${buildBracketNode(m.from1)}${buildBracketNode(m.from2)}</div>`;
+    }
+    return `<div class="vmt-bnode">${childrenHtml}${bbox(m)}</div>`;
+  }
+
+  function bracketTabHtml(){
+    if(!state.matchesById['final']){
+      return `<div class="vmt-section-title">VM-kart</div><div class="vmt-empty">Bracketen er ikke satt opp ennå.</div>`;
+    }
+    const pending = state.matches.filter(m => m.stage === '16-delsfinale');
+    const champ = resolveSide('final', (state.myPred.matches && state.myPred.matches['final'] && state.myPred.matches['final'].winner) || 1, state.myPred);
+    const champPicked = state.myPred.matches && state.myPred.matches['final'] && state.myPred.matches['final'].winner;
+    return `
+      <div class="vmt-section-title">VM-kart</div>
+      <div class="vmt-section-sub">Klikk på et lag i treet for å velge hvem som går videre. Valget ruller automatisk videre til neste runde. Åttedelsfinalene er venstre kant av treet, finalen er til høyre. Det gis 3 poeng per riktig lag som går videre, og 10 poeng for riktig vinner i finalen.</div>
+      ${pending.length ? `
+        <div class="vmt-stage-label">Gjenstående 16-delsfinaler (avgjør de tre siste plassene i åttedelsfinalen)</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;">${pending.map(m => bbox(m)).join('')}</div>
+      ` : ''}
+      <div class="vmt-bracket-scroll">
+        <div class="vmt-bracket-inner">
+          ${buildBracketNode('final')}
+          <div class="vmt-bracket-final-wrap">
+            <div class="vmt-bronze-label">Bronsefinale</div>
+            ${bbox(state.matchesById['bronze'])}
+          </div>
+        </div>
+      </div>
+      ${champPicked ? `
+        <div class="vmt-champion-box">
+          <div class="vmt-cb-label">Din tippede VM-vinner</div>
+          <div class="vmt-cb-name">${esc(champ.name)}</div>
+        </div>
+      ` : `<div class="vmt-empty">Velg vinneren av finalen i treet over for å se hvem du tipper som VM-vinner.</div>`}
+    `;
+  }
+
+  // ---------- picks tab (scorer/assist only) ----------
+  function picksHtml(){
+    const deadline = state.settings.deadline;
+    const locked = isLocked();
+    const lockNote = deadline
+      ? `<div class="vmt-pick-hint" style="margin-bottom:14px;">${locked ? 'Tippingen er stengt.' : 'Frist for å endre: ' + fmtDate(deadline)}</div>`
+      : `<div class="vmt-pick-hint" style="margin-bottom:14px;">Ingen frist satt ennå — tips kan endres fritt inntil videre.</div>`;
+    const disabled = locked ? 'disabled' : '';
+    return `
+      <div class="vmt-section-title">Toppscorer & toppassist</div>
+      <div class="vmt-section-sub">VM-vinneren tipper du i VM-kartet – der du velger finalevinneren. Riktig toppscorer/toppassist gir 10 poeng hver. Bonustipset nederst gir 5 ekstra poeng.</div>
+      ${lockNote}
+      <div class="vmt-picks-grid">
+        <div class="vmt-pick-card">
+          <label>Toppscorer</label>
+          <input id="vmt-pick-scorer" type="text" placeholder="F.eks. Erling Braut Haaland" value="${esc(state.myPred.topscorer||'')}" ${disabled} />
+          ${state.special.topscorer ? `<div class="vmt-pick-hint">Fasit: ${esc(state.special.topscorer)}</div>` : ''}
+        </div>
+        <div class="vmt-pick-card">
+          <label>Toppassist (flest målgivende)</label>
+          <input id="vmt-pick-assist" type="text" placeholder="F.eks. Martin Ødegaard" value="${esc(state.myPred.topassist||'')}" ${disabled} />
+          ${state.special.topassist ? `<div class="vmt-pick-hint">Fasit: ${esc(state.special.topassist)}</div>` : ''}
+        </div>
+        <div class="vmt-pick-card">
+          <label>Bonus: antall mål i finalen (inkl. ev. ekstraomgang)</label>
+          <input id="vmt-pick-finalgoals" type="number" min="0" max="20" placeholder="F.eks. 3" value="${state.myPred.finalGoals != null ? esc(state.myPred.finalGoals) : ''}" ${disabled} />
+          <div class="vmt-pick-hint">Totalt antall mål begge lag scorer til sammen i finalen. Straffesparkkonkurranse teller ikke med. Riktig svar gir 5 bonuspoeng.</div>
+          ${state.special.finalGoals != null ? `<div class="vmt-pick-hint">Fasit: ${esc(state.special.finalGoals)} mål</div>` : ''}
+        </div>
+      </div>
+      ${!locked ? `<div style="margin-top:14px;"><button class="vmt-btn" onclick="vmtSavePicks()">Lagre tips</button></div>` : ''}
+    `;
+  }
+
+  // ---------- results tab ----------
+  function resultsHtml(){
+    if(!state.friends.length) return `<div class="vmt-section-title">Resultater</div><div class="vmt-empty">Ingen deltakere ennå.</div>`;
+    const rows = state.friends.map(f => {
+      const pred = state.allPreds[f] || { matches:{}, topscorer:'', topassist:'', finalGoals:'' };
+      const t = computeTotals(f, pred);
+      return { name: f, ...t };
+    }).sort((a,b) => b.total - a.total);
+    return `
+      <div class="vmt-section-title">Resultater</div>
+      <div class="vmt-section-sub">3 poeng for hvert riktige lag som går videre, 10 poeng for riktig vinner i finalen. Toppscorer/toppassist gir 10p hver. Bonustips på mål i finalen gir 5p.</div>
+      <table class="vmt-lb">
+        <thead><tr><th>#</th><th>Navn</th><th>Kamppoeng</th><th>Scorer</th><th>Assist</th><th>Bonus</th><th>Totalt</th></tr></thead>
+        <tbody>${rows.map((r,i) => `
+          <tr class="${r.name===state.currentUser?'vmt-me':''} ${i===0?'vmt-rank1':''}">
+            <td class="vmt-rank">${i+1}</td><td>${esc(r.name)}${r.overridden ? ' <span title="Justert av admin" style="color:var(--gold-dim);">✎</span>' : ''}</td><td>${r.matchPts}</td><td>${r.scorerPts}</td><td>${r.assistPts}</td><td>${r.goalsPts}</td><td class="vmt-total">${r.total}</td>
+          </tr>`).join('')}</tbody>
+      </table>
+    `;
+  }
+
+  // ---------- admin tab ----------
+  function adminHtml(){
+    return `
+      <div class="vmt-stage-label" style="margin-top:34px;">Admin</div>
+      <div class="vmt-admin-box">
+        <h4>Legg til kamp</h4>
+        <div class="vmt-form-row"><select id="vmt-a-stage">${STAGE_ORDER.map(s => `<option value="${s}">${STAGE_LABELS[s]}</option>`).join('')}</select></div>
+        <div class="vmt-form-row"><input id="vmt-a-team1" type="text" placeholder="Lag 1" /><input id="vmt-a-team2" type="text" placeholder="Lag 2" /></div>
+        <div class="vmt-form-row"><input id="vmt-a-kickoff" type="datetime-local" /><button class="vmt-btn" onclick="vmtAddMatch()">Legg til</button></div>
+      </div>
+      <div class="vmt-admin-box">
+        <h4>Kamper & faktisk resultat</h4>
+        ${state.matches.map(m => {
+          const t1 = resolveSide(m.id,1,{});
+          const t2 = resolveSide(m.id,2,{});
+          const hasFeeders = !!(m.from1 || m.from2);
+          const nameEdit = hasFeeders ? '' : `
+            <div style="display:flex;gap:6px;margin-top:6px;">
+              <input id="vmt-t1-${m.id}" type="text" value="${esc(m.team1)}" style="width:100px;background:var(--pitch);border:1px solid var(--line);border-radius:5px;color:var(--chalk);padding:4px 6px;font-size:12px;" />
+              <input id="vmt-t2-${m.id}" type="text" value="${esc(m.team2)}" style="width:100px;background:var(--pitch);border:1px solid var(--line);border-radius:5px;color:var(--chalk);padding:4px 6px;font-size:12px;" />
+              <button class="vmt-btn secondary small" onclick="vmtSaveTeams('${m.id}')">Lagre lag</button>
+            </div>`;
+          const resultCtrl = m.result
+            ? `<span class="vmt-pick-hint">Vant: ${m.result.winner===1?esc(t1.name):esc(t2.name)}</span> <button class="vmt-btn secondary small" onclick="vmtClearResult('${m.id}')">Nullstill</button>`
+            : `<button class="vmt-btn secondary small" onclick="vmtSetActualResult('${m.id}',1)">${esc(t1.name)} vant</button>
+               <button class="vmt-btn secondary small" onclick="vmtSetActualResult('${m.id}',2)">${esc(t2.name)} vant</button>`;
+          return `<div class="vmt-admin-match-row">
+            <div class="vmt-am-name">${STAGE_LABELS[m.stage]}: ${esc(t1.name)} – ${esc(t2.name)}
+              ${nameEdit}
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">${resultCtrl}
+              <button class="vmt-btn small" style="background:var(--red);color:var(--chalk);" onclick="vmtDeleteMatch('${m.id}')">Slett</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="vmt-admin-box">
+        <h4>Fasit: toppscorer, toppassist & mål i finalen</h4>
+        <div class="vmt-form-row">
+          <input id="vmt-sp-scorer" type="text" placeholder="Toppscorer" value="${esc(state.special.topscorer||'')}" />
+          <input id="vmt-sp-assist" type="text" placeholder="Toppassist" value="${esc(state.special.topassist||'')}" />
+          <input id="vmt-sp-finalgoals" type="number" min="0" max="20" placeholder="Mål i finalen" value="${state.special.finalGoals != null ? state.special.finalGoals : ''}" />
+        </div>
+        <button class="vmt-btn" onclick="vmtSaveSpecial()">Lagre fasit</button>
+      </div>
+      <div class="vmt-admin-box">
+        <h4>Frist for tipping (gjelder alt)</h4>
+        <div class="vmt-pick-hint" style="margin-bottom:10px;">Én frist for hele siden. Etter dette tidspunktet kan ingen velge lag i VM-kartet eller endre toppscorer/toppassist. Nåværende frist: ${state.settings.deadline ? fmtDate(state.settings.deadline) : 'ingen satt'}.</div>
+        <div class="vmt-form-row">
+          <input id="vmt-sp-deadline" type="datetime-local" value="${toLocalInputValue(state.settings.deadline)}" />
+          <button class="vmt-btn secondary" onclick="vmtSaveDeadline()">Lagre frist</button>
+        </div>
+      </div>
+      <div class="vmt-admin-box">
+        <h4>Brukere & koder</h4>
+        ${state.friends.length ? state.friends.map(f => `
+          <div class="vmt-admin-match-row">
+            <div class="vmt-am-name">${esc(f)}<div class="vmt-am-teams">Kode: ${esc(state.pins[slugify(f)] || 'ikke satt')}</div></div>
+            <button class="vmt-btn small" style="background:var(--red);color:var(--chalk);" onclick="vmtDeleteFriend('${esc(f).replace(/'/g,"\\'")}')">Fjern</button>
+          </div>
+        `).join('') : '<div class="vmt-pick-hint">Ingen brukere ennå.</div>'}
+      </div>
+      <div class="vmt-admin-box">
+        <h4>Poengjusteringer</h4>
+        <div class="vmt-pick-hint" style="margin-bottom:10px;">Overstyr poengsummene direkte per person. Tomt felt = bruk automatisk beregnet poengsum for den posten.</div>
+        ${state.friends.length ? state.friends.map(f => {
+          const slug = slugify(f);
+          const pred = state.allPreds[f] || { matches:{}, topscorer:'', topassist:'', finalGoals:'' };
+          const t = computeTotals(f, pred);
+          const ov = state.scoreOverrides[slug] || {};
+          return `<div class="vmt-admin-match-row">
+            <div class="vmt-am-name">${esc(f)}${t.overridden ? ' <span style="color:var(--gold-dim);">✎ justert</span>' : ''}
+              <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+                <input id="vmt-ov-match-${slug}" type="number" placeholder="Kamp" value="${ov.matchPts != null ? ov.matchPts : ''}" style="width:70px;background:var(--pitch);border:1px solid var(--line);border-radius:5px;color:var(--chalk);padding:4px 6px;font-size:12px;" />
+                <input id="vmt-ov-scorer-${slug}" type="number" placeholder="Scorer" value="${ov.scorerPts != null ? ov.scorerPts : ''}" style="width:70px;background:var(--pitch);border:1px solid var(--line);border-radius:5px;color:var(--chalk);padding:4px 6px;font-size:12px;" />
+                <input id="vmt-ov-assist-${slug}" type="number" placeholder="Assist" value="${ov.assistPts != null ? ov.assistPts : ''}" style="width:70px;background:var(--pitch);border:1px solid var(--line);border-radius:5px;color:var(--chalk);padding:4px 6px;font-size:12px;" />
+                <input id="vmt-ov-goals-${slug}" type="number" placeholder="Bonus" value="${ov.goalsPts != null ? ov.goalsPts : ''}" style="width:70px;background:var(--pitch);border:1px solid var(--line);border-radius:5px;color:var(--chalk);padding:4px 6px;font-size:12px;" />
+              </div>
+              <div class="vmt-am-teams">Auto-beregnet: kamp ${t.raw.matchPts} · scorer ${t.raw.scorerPts} · assist ${t.raw.assistPts} · bonus ${t.raw.goalsPts} — nåværende total: ${t.total}p</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+              <button class="vmt-btn secondary small" onclick="vmtSaveOverride('${esc(f).replace(/'/g,"\\'")}')">Lagre</button>
+              <button class="vmt-btn small" onclick="vmtResetOverride('${esc(f).replace(/'/g,"\\'")}')">Nullstill</button>
+            </div>
+          </div>`;
+        }).join('') : '<div class="vmt-pick-hint">Ingen brukere ennå.</div>'}
+      </div>
+    `;
+  }
+
+  // ---------- boot ----------
+  loadCore().then(() => { state.booting = false; render(); });
+
+})();
+</script>
